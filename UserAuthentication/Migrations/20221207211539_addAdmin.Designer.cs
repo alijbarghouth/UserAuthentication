@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace UserAuthentication.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20221205143914_addAdmin")]
+    [Migration("20221207211539_addAdmin")]
     partial class addAdmin
     {
         /// <inheritdoc />
@@ -57,10 +57,14 @@ namespace UserAuthentication.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("TokenCraete")
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("TokenCreated")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("TokenExpier")
+                    b.Property<DateTime>("TokenExpires")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("permision")

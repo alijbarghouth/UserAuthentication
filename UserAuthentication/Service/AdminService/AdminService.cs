@@ -4,6 +4,7 @@ using UserAuthentication.Models;
 
 namespace UserAuthentication.Service.AdminService
 {
+
     public class AdminService : IAdminService
     {
         private readonly ApplicationDBContext _context;
@@ -29,6 +30,12 @@ namespace UserAuthentication.Service.AdminService
 
 
             return names;
+        }
+
+        public async Task<IEnumerable<Admin>> getAllAdmin()
+        {
+            var admin = await _context.Admins.ToListAsync();
+            return admin;
         }
     }
 }

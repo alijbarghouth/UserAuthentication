@@ -10,9 +10,11 @@
 
         public byte [] PasswordSlot { get; set; }
 
-        public DateTime TokenCraete { get; set; }
+        public DateTime TokenCreated { get; set; }
 
-        public DateTime TokenExpier { get; set; }
+        public DateTime TokenExpires { get; set; }
+
+        public string RefreshToken { get; set; } = string.Empty;
 
         public int permision { get; set; }
 

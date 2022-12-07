@@ -9,6 +9,6 @@ namespace UserAuthentication.Service.AdminService
 
         Task<Admin> getName(string name );
 
-
+        Task<IEnumerable<Admin>> getAllAdmin();
     }
 }

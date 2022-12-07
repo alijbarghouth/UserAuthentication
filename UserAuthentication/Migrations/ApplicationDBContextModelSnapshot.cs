@@ -54,10 +54,14 @@ namespace UserAuthentication.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("TokenCraete")
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("TokenCreated")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("TokenExpier")
+                    b.Property<DateTime>("TokenExpires")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("permision")

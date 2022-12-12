@@ -1,4 +1,6 @@
-﻿namespace UserAuthentication.Models
+﻿using System.Net;
+
+namespace UserAuthentication.Models
 {
     public class Admin
     {
@@ -22,6 +24,8 @@
 
         public string PhoneNumber { get; set; } = string.Empty;
 
-        public string Address { get; set; } = string.Empty; 
+        public string Address { get; set; } = string.Empty;
+
+        public string? IPAddress { get; set; }
     }
 }

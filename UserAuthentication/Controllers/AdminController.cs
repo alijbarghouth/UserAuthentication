@@ -13,6 +13,8 @@ using UserAuthentication.Hashing;
 using UserAuthentication.Models;
 using UserAuthentication.Service.AdminService;
 using UserAuthentication.Token;
+using Microsoft.AspNetCore.HttpOverrides;
+using System.Runtime.InteropServices;
 
 namespace UserAuthentication.Controllers
 {
@@ -48,7 +50,7 @@ namespace UserAuthentication.Controllers
             var admin = _mapper.Map<Admin>(dto);
             admin.PasswordHash = passwordHash;
             admin.PasswordSlot = passwordSlot;
-
+            admin.IPAddress = Request.HttpContext.Connection.RemoteIpAddress?.ToString();
             await _service.RegisterAdmin(admin);
 
             return Ok(admin);
@@ -177,8 +179,13 @@ namespace UserAuthentication.Controllers
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
+            
+
             return jwt;
         }
+
+       
+
 
 
 

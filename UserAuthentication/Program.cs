@@ -1,5 +1,6 @@
 using Add_Database_Model.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -21,7 +22,10 @@ builder.Services.AddDbContext<ApplicationDBContext>(option =>
 option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 
 );
-
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+});
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -77,7 +81,11 @@ if (app.Environment.IsDevelopment())
 }
 app.UseCors("NgOrigins");
 
+
+
 app.UseHttpsRedirection();
+
+app.UseForwardedHeaders();
 
 app.UseAuthentication();
 

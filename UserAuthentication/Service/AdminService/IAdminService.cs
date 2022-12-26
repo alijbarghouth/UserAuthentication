@@ -7,7 +7,14 @@ namespace UserAuthentication.Service.AdminService
         Task<Admin> RegisterAdmin(Admin admin);
 
 
-        Task<Admin> getName(string name );
+        Task<Admin> getByName(string name );
+
+
+        Task<Admin> getByEmail(string Email );
+
+
+        Task<Admin> getById(int id );
+
 
         Task<IEnumerable<Admin>> getAllAdmin();
     }

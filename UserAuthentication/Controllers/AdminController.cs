@@ -45,6 +45,16 @@ namespace UserAuthentication.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> RegisterAdmin([FromForm] AdminDto dto)
         {
+            if(await _service.getByName(dto.Name) is not null)
+            {
+                return BadRequest($"The {dto.Name} is Exist");
+            }
+            
+            if(await _service.getByEmail(dto.Email) is not null)
+            {
+                return BadRequest($"The {dto.Email} is Exist");
+            }
+
             _hash.CraeteHashPassword(dto.Password, out byte[] passwordHash, out byte[] passwordSlot);
 
             var admin = _mapper.Map<Admin>(dto);
@@ -52,6 +62,7 @@ namespace UserAuthentication.Controllers
             admin.PasswordSlot = passwordSlot;
             admin.IPAddress = Request.HttpContext.Connection.RemoteIpAddress?.ToString();
             await _service.RegisterAdmin(admin);
+
 
             return Ok(admin);
 
@@ -62,7 +73,7 @@ namespace UserAuthentication.Controllers
         {
 
 
-            var admin = await _service.getName(dto.Name);
+            var admin = await _service.getByName(dto.Name);
 
             if (admin is null)
             {
@@ -73,9 +84,10 @@ namespace UserAuthentication.Controllers
                 return BadRequest("The password is wrong");
             }
             string token;
-            if (admin.Name == "alibarghouth")
+
+            if (admin.permision == 1)
             {
-                token = CreateTokenAlibarghouth(admin);
+                token = CreateTokenAdmin(admin);
 
                 var refreshToken = GenerateRefreshToken();
                 SetRefreshToken(refreshToken, admin);
@@ -89,10 +101,10 @@ namespace UserAuthentication.Controllers
             return Ok(token);
 
         }
-        [HttpPost("refresh-token"), Authorize(Roles = "alibarghouth")]
+        [HttpPost("refresh-token"), Authorize(Roles ="Admin")]
         public async Task<IActionResult> RefreshToken(AdminDto dto)
         {
-            var admin = await _service.getName(dto.Name);
+            var admin = await _service.getByName(dto.Name);
 
             var refreshToken = Request.Cookies["refreshToken"];
 
@@ -142,7 +154,7 @@ namespace UserAuthentication.Controllers
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, admin.Name),
-                new Claim(ClaimTypes.Role,"Admin")
+                new Claim(ClaimTypes.Role,"User")
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
@@ -159,12 +171,13 @@ namespace UserAuthentication.Controllers
 
             return jwt;
         }
-        private string CreateTokenAlibarghouth(Admin admin)
+        private string CreateTokenAdmin(Admin admin)
         {
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, admin.Name),
-                new Claim(ClaimTypes.Role,"alibarghouth")
+                new Claim(ClaimTypes.Role,"User"),
+                new Claim(ClaimTypes.Role,"Admin")
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(

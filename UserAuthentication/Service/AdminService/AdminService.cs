@@ -24,9 +24,11 @@ namespace UserAuthentication.Service.AdminService
         }
     
 
-        public async  Task<Admin> getName(string name)
+        public async  Task<Admin> getByName(string name)
         {
             var names =await _context.Admins.SingleOrDefaultAsync(x => x.Name == name);
+
+
 
 
             return names;
@@ -35,6 +37,20 @@ namespace UserAuthentication.Service.AdminService
         public async Task<IEnumerable<Admin>> getAllAdmin()
         {
             var admin = await _context.Admins.ToListAsync();
+            return admin;
+        }
+
+        public async Task<Admin> getById(int id)
+        {
+            var admin = await _context.Admins.FindAsync(id);
+
+            return admin;
+        }
+
+        public async Task<Admin> getByEmail(string Email)
+        {
+            var admin = await _context.Admins.SingleOrDefaultAsync(x => x.Eamil == Email);
+
             return admin;
         }
     }

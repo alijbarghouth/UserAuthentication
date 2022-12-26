@@ -43,7 +43,7 @@ namespace UserAuthentication.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> RegisterAdmin(AdminDto dto)
+        public async Task<IActionResult> RegisterAdmin([FromForm] AdminDto dto)
         {
             _hash.CraeteHashPassword(dto.Password, out byte[] passwordHash, out byte[] passwordSlot);
 

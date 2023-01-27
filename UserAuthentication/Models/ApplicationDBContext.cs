@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Data;
 using UserAuthentication.Models;
+using UserAuthentication.Token;
 
 namespace Add_Database_Model.Models
 {
@@ -18,6 +19,7 @@ namespace Add_Database_Model.Models
 
 
         public DbSet<Admin> Admins { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     }
 }

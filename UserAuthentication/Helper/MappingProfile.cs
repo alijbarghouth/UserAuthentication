@@ -11,7 +11,8 @@ namespace UserAuthentication.Helper
             CreateMap<AdminDto, Admin>()
                 .ForMember(src => src.PasswordHash, option => option.Ignore())
                 .ForMember(src => src.PasswordSlot, option => option.Ignore())
-                .ForMember(src => src.IPAddress, option => option.Ignore());
+                .ForMember(src => src.Eamil ,option => option.Ignore())
+                ;
                 
         }
     }

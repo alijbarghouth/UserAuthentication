@@ -20,13 +20,13 @@ namespace UserAuthentication.Models
 
         public int permision { get; set; }
 
-        public string Eamil { get; set; } = string.Empty;
+        public string Eamil { get; set; } 
 
         public string PhoneNumber { get; set; } = string.Empty;
 
         public string Address { get; set; } = string.Empty;
 
-        public string? IPAddress { get; set; }
+        //public string? IPAddress { get; set; }
 
 
     }

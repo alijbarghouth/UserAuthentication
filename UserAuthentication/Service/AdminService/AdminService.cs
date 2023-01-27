@@ -1,6 +1,7 @@
 ﻿using Add_Database_Model.Models;
 using Microsoft.EntityFrameworkCore;
 using UserAuthentication.Models;
+using UserAuthentication.Response;
 
 namespace UserAuthentication.Service.AdminService
 {
@@ -18,15 +19,15 @@ namespace UserAuthentication.Service.AdminService
 
         public async Task<Admin> RegisterAdmin(Admin admin)
         {
-             await _context.AddAsync(admin);
+            await _context.AddAsync(admin);
             _context.SaveChanges();
-             return admin;
+            return admin;
         }
-    
 
-        public async  Task<Admin> getByName(string name)
+
+        public async Task<Admin> getByName(string name)
         {
-            var names =await _context.Admins.SingleOrDefaultAsync(x => x.Name == name);
+            var names = await _context.Admins.SingleOrDefaultAsync(x => x.Name == name);
 
 
 
@@ -52,6 +53,21 @@ namespace UserAuthentication.Service.AdminService
             var admin = await _context.Admins.SingleOrDefaultAsync(x => x.Eamil == Email);
 
             return admin;
+        }
+
+        public async Task<RefreshTokenResponse> Logout(int id)
+        {
+            var refreshToken = await _context.RefreshTokens.SingleOrDefaultAsync(p => p.AdminId == id);
+
+            if (refreshToken == null)
+            {
+                return new RefreshTokenResponse { success = true };
+            }
+
+            _context.RefreshTokens.Remove(refreshToken);
+            _context.SaveChanges();
+
+            return new RefreshTokenResponse { success = true };
         }
     }
 }

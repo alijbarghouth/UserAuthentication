@@ -15,6 +15,7 @@ using UserAuthentication.Service.AdminService;
 using UserAuthentication.Token;
 using Microsoft.AspNetCore.HttpOverrides;
 using System.Runtime.InteropServices;
+using Add_Database_Model.Models;
 
 namespace UserAuthentication.Controllers
 {
@@ -26,13 +27,14 @@ namespace UserAuthentication.Controllers
         private readonly IAdminService _service;
         private readonly IHashPassword _hash;
         private readonly IConfiguration _configuration;
-
-        public AdminController(IMapper mapper, IAdminService service, IHashPassword hash, IConfiguration configuration)
+        private readonly ApplicationDBContext _context;
+        public AdminController(IMapper mapper, IAdminService service, IHashPassword hash, IConfiguration configuration, ApplicationDBContext context)
         {
             _mapper = mapper;
             _service = service;
             _hash = hash;
             _configuration = configuration;
+            _context = context;
         }
 
         [HttpGet("getdata"), Authorize(Roles = "Admin")]
@@ -60,7 +62,8 @@ namespace UserAuthentication.Controllers
             var admin = _mapper.Map<Admin>(dto);
             admin.PasswordHash = passwordHash;
             admin.PasswordSlot = passwordSlot;
-            admin.IPAddress = Request.HttpContext.Connection.RemoteIpAddress?.ToString();
+            admin.Eamil = dto.Email;
+            //admin.IPAddress = Request.HttpContext.Connection.RemoteIpAddress?.ToString();
             await _service.RegisterAdmin(admin);
 
 
@@ -84,23 +87,39 @@ namespace UserAuthentication.Controllers
                 return BadRequest("The password is wrong");
             }
             string token;
-
+            RefreshToken refreshToken;
             if (admin.permision == 1)
             {
                 token = CreateTokenAdmin(admin);
 
-                var refreshToken = GenerateRefreshToken();
+                 refreshToken =  GenerateRefreshToken(admin);
                 SetRefreshToken(refreshToken, admin);
             }
             else
             {
                 token = CreateToken(admin);
-                var refreshToken = GenerateRefreshToken();
+                 refreshToken =GenerateRefreshToken(admin);
                 SetRefreshToken(refreshToken, admin);
             }
             return Ok(token);
 
         }
+        [Authorize(Roles ="user")]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Logout(int id)
+        {
+            var refreshToken =await _service.Logout(id);
+
+            if(refreshToken.success == false)
+            {
+                return BadRequest("the logout is failed");
+            }
+
+            return Ok(refreshToken);
+
+        }
+        
+
         [HttpPost("refresh-token"), Authorize(Roles ="Admin")]
         public async Task<IActionResult> RefreshToken(AdminDto dto)
         {
@@ -118,20 +137,22 @@ namespace UserAuthentication.Controllers
             }
 
             string token = CreateToken(admin);
-            var newRefreshToken = GenerateRefreshToken();
+            var newRefreshToken = GenerateRefreshToken(admin);
             SetRefreshToken(newRefreshToken, admin);
 
             return Ok(token);
         }
-        private RefreshToken GenerateRefreshToken()
+        private  RefreshToken GenerateRefreshToken(Admin admin)
         {
             var refreshToken = new RefreshToken
             {
+                AdminId =admin.Id,
                 Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
                 Expires = DateTime.Now.AddDays(7),
                 Created = DateTime.Now
             };
 
+              _context.RefreshTokens.AddAsync(refreshToken);
             return refreshToken;
         }
 
@@ -147,6 +168,7 @@ namespace UserAuthentication.Controllers
             admin.RefreshToken = newRefreshToken.Token;
             admin.TokenCreated = newRefreshToken.Created;
             admin.TokenExpires = newRefreshToken.Expires;
+            _context.Admins.Update(admin);
         }
 
         private string CreateToken(Admin admin)

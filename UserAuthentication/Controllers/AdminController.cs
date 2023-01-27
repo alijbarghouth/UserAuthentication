@@ -169,6 +169,7 @@ namespace UserAuthentication.Controllers
             admin.TokenCreated = newRefreshToken.Created;
             admin.TokenExpires = newRefreshToken.Expires;
             _context.Admins.Update(admin);
+            _context.SaveChanges();
         }
 
         private string CreateToken(Admin admin)
